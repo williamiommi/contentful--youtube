@@ -1,10 +1,12 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { AppExtensionSDK } from '@contentful/app-sdk';
-import { Heading, Form, Paragraph, Flex } from '@contentful/f36-components';
+import { Heading, Form, Paragraph, Flex, FormControl, TextInput } from '@contentful/f36-components';
 import { css } from 'emotion';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 
-export interface AppInstallationParameters {}
+export interface AppInstallationParameters {
+  apiKey?: string;
+}
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({});
@@ -14,6 +16,10 @@ const ConfigScreen = () => {
      If it is not needed, you can remove the next line.
   */
   // const cma = useCMA();
+
+  const onApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setParameters({ ...parameters, apiKey: e.target.value });
+  };
 
   const onConfigure = useCallback(async () => {
     // This method will be called when a user clicks on "Install"
@@ -59,8 +65,18 @@ const ConfigScreen = () => {
   return (
     <Flex flexDirection="column" className={css({ margin: '80px', maxWidth: '800px' })}>
       <Form>
-        <Heading>App Config</Heading>
-        <Paragraph>Welcome to your contentful app. This is your config page.</Paragraph>
+        <Heading>Youtube App Config</Heading>
+        <Paragraph>The Youtube app allows editors to select videos from youtube</Paragraph>
+        <Heading>Configuration</Heading>
+        <FormControl style={{ maxWidth: '400px' }}>
+          <FormControl.Label isRequired>Public Key</FormControl.Label>
+          <TextInput
+            name="publicKey"
+            id="publicKey"
+            value={parameters.apiKey || ''}
+            onChange={onApiKeyChange}
+          />
+        </FormControl>
       </Form>
     </Flex>
   );
