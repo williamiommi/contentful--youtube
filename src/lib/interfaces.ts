@@ -23,7 +23,7 @@ export interface IYTError {
   };
 }
 
-export interface IYTResponse {
+export interface IYTSearchResponse {
   kind: string;
   etag: string;
   nextPageToken: string;
@@ -33,17 +33,17 @@ export interface IYTResponse {
     totalResults: number;
     resultsPerPage: number;
   };
-  items: IYTResource[];
+  items: IYTSearchResource[];
 }
 
-export interface IYTResource {
+export interface IYTSearchResource {
   kind: string;
   etag: string;
   id: {
     kind: string;
-    videoId: string;
-    channelId: string;
-    playlistId: string;
+    videoId?: string;
+    channelId?: string;
+    playlistId?: string;
   };
   snippet: {
     publishedAt: string;
@@ -53,5 +53,84 @@ export interface IYTResource {
     thumbnails: IYTThumbnails;
     channelTitle: string;
     liveBroadcastContent: string;
+  };
+}
+
+export interface IYTVideoResponse {
+  kind: string;
+  etag: string;
+  pageInfo: {
+    totalResults: number;
+    resultsPerPage: number;
+  };
+  items: IYTVideoResource[];
+}
+
+export interface IYTVideoResource {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet: {
+    publishedAt: string;
+    channelId: string;
+    title: string;
+    description: string;
+    thumbnails: IYTThumbnails;
+    channelTitle: string;
+    tags: [string];
+    categoryId: string;
+    liveBroadcastContent: string;
+    defaultLanguage: string;
+    localized: {
+      title: string;
+      description: string;
+    };
+    defaultAudioLanguage: string;
+  };
+  contentDetails: {
+    duration: string;
+    dimension: string;
+  };
+  statistics: {
+    viewCount: number;
+    likeCount: number;
+    dislikeCount: number;
+    favoriteCount: number;
+    commentCount: number;
+  };
+  player: {
+    embedHtml: string;
+    embedHeight: number;
+    embedWidth: number;
+  };
+  channelInfo?: IYTChannelResource;
+}
+
+export interface IYTChannelResponse {
+  kind: string;
+  etag: string;
+  pageInfo: {
+    totalResults: number;
+    resultsPerPage: number;
+  };
+  items: IYTChannelResource[];
+}
+
+export interface IYTChannelResource {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet: {
+    title: string;
+    description: string;
+    customUrl: string;
+    publishedAt: string;
+    thumbnails: IYTThumbnails;
+    defaultLanguage: string;
+    localized: {
+      title: string;
+      description: string;
+    };
+    country: string;
   };
 }
