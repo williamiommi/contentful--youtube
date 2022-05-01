@@ -6,6 +6,7 @@ import { SDKProvider } from '@contentful/react-apps-toolkit';
 
 import LocalhostWarning from './components/LocalhostWarning';
 import App from './App';
+import './index.css';
 
 const root = document.getElementById('root');
 
