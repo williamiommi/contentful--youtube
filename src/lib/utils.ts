@@ -1,8 +1,8 @@
 import { formatDistanceToNowStrict } from 'date-fns';
 
-export const formatDate = (isoDate?: string) => {
-  if (!isoDate) return '';
-  return new Date(isoDate).toLocaleDateString('en-gb', {
+export const formatDate = (date?: string) => {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('en-gb', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
