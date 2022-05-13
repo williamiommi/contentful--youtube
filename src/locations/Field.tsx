@@ -29,7 +29,6 @@ const Field = () => {
       position: 'top',
       minHeight: '75vh',
       width: 'fullWidth',
-      shouldCloseOnOverlayClick: true,
     });
   };
 
