@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   IYTError,
   IYTSearchResource,
@@ -8,8 +8,8 @@ import {
   IYTChannelResponse,
   IYTVideoResource,
 } from '../interfaces';
+import { getSearchChannelParams, getSearchParams, getSearchVideoParams } from '../utils';
 const YT_BASE_URL = 'https://www.googleapis.com/youtube/v3';
-const DEFAULT_PART_VIDEO = ['snippet', 'contentDetails', 'statistics', 'player'];
 
 function sleep(ms: number) {
   // add ms millisecond timeout before promise resolution
@@ -25,62 +25,30 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [videos, setVideos] = useState<IYTVideoResource[]>();
 
-  const getSearchParams = (pageToken?: string): string => {
-    const searchParams = new URLSearchParams();
-    searchParams.append('key', apiKey);
-    searchParams.append('part', 'snippet');
-    searchParams.append('type', 'video');
-    searchParams.append('videoEmbeddable', 'true');
-    if (queryTermRef.current) searchParams.append('q', queryTermRef.current);
-    if (pageToken) searchParams.append('pageToken', pageToken);
-    // print options
-    for (let option in options) {
-      searchParams.append(option, `${options[option as keyof typeof options]}`);
-    }
-    return searchParams.toString();
-  };
-
-  const getSearchVideoParams = (videoIds: string[]): string => {
-    const searchParams = new URLSearchParams();
-    searchParams.append('key', apiKey);
-    searchParams.append('part', DEFAULT_PART_VIDEO.join(','));
-    searchParams.append('id', videoIds.join(','));
-    searchParams.append('maxWidth', '360');
-    return searchParams.toString();
-  };
-
-  const getSearchChannelParams = (channelId: string): string => {
-    const searchParams = new URLSearchParams();
-    searchParams.append('key', apiKey);
-    searchParams.append('part', 'snippet');
-    searchParams.append('id', channelId);
-    return searchParams.toString();
-  };
-
   const handleError = async (res: Response) => {
     const json = (await res.json()) as IYTError;
     setError(json.error.message);
     throw json.error.message;
   };
 
-  const fetchResults = async (params: string): Promise<IYTSearchResponse> => {
+  const fetchResults = useCallback(async (params: string): Promise<IYTSearchResponse> => {
     setIsFetching(true);
     const res = await fetch(`${YT_BASE_URL}/search?${params}`);
     if (!res.ok) handleError(res);
     return res.json();
-  };
+  }, []);
 
-  const fetchVideos = async (params: string): Promise<IYTVideoResponse> => {
+  const fetchVideos = useCallback(async (params: string): Promise<IYTVideoResponse> => {
     const res = await fetch(`${YT_BASE_URL}/videos?${params}`);
     if (!res.ok) handleError(res);
     return res.json();
-  };
+  }, []);
 
-  const fetchChannel = async (params: string): Promise<IYTChannelResponse> => {
+  const fetchChannel = useCallback(async (params: string): Promise<IYTChannelResponse> => {
     const res = await fetch(`${YT_BASE_URL}/channels?${params}`);
     if (!res.ok) handleError(res);
     return res.json();
-  };
+  }, []);
 
   const updateData = (
     videos: IYTSearchResource[],
@@ -97,7 +65,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const search = async (q: string) => {
     try {
       queryTermRef.current = q;
-      const data = await fetchResults(getSearchParams());
+      const data = await fetchResults(getSearchParams(apiKey, q, undefined, options));
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
       console.error(e);
@@ -108,7 +76,9 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const loadMore = async () => {
     try {
       if (!nextPageRef.current) return;
-      const data = await fetchResults(getSearchParams(nextPageRef.current));
+      const data = await fetchResults(
+        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current, options)
+      );
       updateData([...results, ...data.items], data.nextPageToken, data.prevPageToken);
     } catch (e) {
       console.error(e);
@@ -119,7 +89,9 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const nextPage = async () => {
     try {
       if (!nextPageRef.current) return;
-      const data = await fetchResults(getSearchParams(nextPageRef.current));
+      const data = await fetchResults(
+        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current, options)
+      );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
       console.error(e);
@@ -130,7 +102,9 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const prevPage = async () => {
     try {
       if (!prevPageRef.current) return;
-      const data = await fetchResults(getSearchParams(prevPageRef.current));
+      const data = await fetchResults(
+        getSearchParams(apiKey, queryTermRef.current, prevPageRef.current, options)
+      );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
       console.error(e);
@@ -138,24 +112,29 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     }
   };
 
-  const getVideosInfo = async (videoIds: string[]) => {
-    try {
-      const data = await fetchVideos(getSearchVideoParams(videoIds));
-      for (let item of data.items) {
-        const channel = await fetchChannel(getSearchChannelParams(item.snippet.channelId));
-        item.channelInfo = channel.items[0];
+  const getVideosInfo = useCallback(
+    async (videoIds: string[]) => {
+      try {
+        const data = await fetchVideos(getSearchVideoParams(apiKey, videoIds));
+        for (let item of data.items) {
+          const channel = await fetchChannel(
+            getSearchChannelParams(apiKey, item.snippet.channelId)
+          );
+          item.channelInfo = channel.items[0];
+        }
+        setVideos(data.items);
+      } catch (e) {
+        console.error(e);
+        setError('Ops! Something went wrong!');
       }
-      setVideos(data.items);
-    } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
-    }
-  };
+    },
+    [apiKey, fetchVideos, fetchChannel]
+  );
 
   const _fetchResults = async (url: string): Promise<IYTSearchResponse> => {
     setIsFetching(true);
     const res = await fetch(url);
-    await sleep(5 * 1000);
+    // await sleep(0.3 * 1000);
     if (!res.ok) handleError(res);
     return res.json();
   };
@@ -197,6 +176,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     loadMore,
     nextPage,
     prevPage,
+    hasResults: results.length > 0,
     hasLoadMore: nextPageRef.current,
     isFetching,
     getVideosInfo,
