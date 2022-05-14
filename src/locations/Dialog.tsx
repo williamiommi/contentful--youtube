@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
-import { Button, Modal, TextInput, ModalLauncher } from '@contentful/f36-components';
+import { Button, Modal, TextInput, ModalLauncher, Form } from '@contentful/f36-components';
 import useYtApi from '../lib/hooks/useYtApi';
 import SmallTile from '../components/SmallTile';
 import PreviewModal from '../components/PreviewModal';
@@ -39,17 +39,20 @@ const Dialog = () => {
     <>
       <Modal.Header title="Search and Select a Video" onClose={sdk.close} />
       <div className="p-10">
-        <div className="flex items-center justify-center max-w-2xl mx-auto gap-x-2">
+        <Form
+          onSubmit={onSearch}
+          className="flex items-center justify-center max-w-2xl mx-auto gap-x-2"
+        >
           <TextInput ref={inputRef} className="w-10/12" placeholder="Search for a video..." />
           <Button
             variant="primary"
             className="w-2/12 !font-bold"
-            onClick={onSearch}
+            type="submit"
             isLoading={yt.isFetching}
           >
             {!yt.isFetching ? 'SEARCH' : ''}
           </Button>
-        </div>
+        </Form>
         <br />
         <br />
         {yt.results.length > 0 && (
