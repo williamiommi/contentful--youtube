@@ -8,7 +8,7 @@ import Tile from '../components/Tile';
 const Field = () => {
   const sdk = useSDK<FieldExtensionSDK>();
   const [fieldValue, setFieldValue] = useState(sdk.field.getValue());
-  // const { getVideosInfo, videos, setVideos } = useYtApi(sdk.parameters.installation.apiKey);
+  const { getVideosInfo, videos } = useYtApi(sdk.parameters.installation.apiKey);
   useAutoResizer();
 
   // const clearField = async () => {
@@ -18,29 +18,49 @@ const Field = () => {
   //   sdk.entry.save();
   // };
 
-  const setVideo = () => {
-    sdk.field.setValue(['Ipv_LWcdfC0']);
-    setFieldValue(['Ipv_LWcdfC0']);
+  const setVideo = (id: string) => {
+    // Ipv_LWcdfC0
+    sdk.field.setValue([id]);
+    setFieldValue([id]);
     sdk.entry.save();
   };
 
-  const openDialog = () => {
-    sdk.dialogs.openCurrent({
+  const openDialog = async () => {
+    const res = await sdk.dialogs.openCurrent({
       position: 'top',
       minHeight: '75vh',
       width: 'fullWidth',
     });
+    if (res.id) {
+      setVideo(res.id);
+    }
   };
 
-  // useEffect(() => {
-  //   if (fieldValue) {
-  //     getVideosInfo(fieldValue);
-  //   }
-  // }, [fieldValue, getVideosInfo]);
+  useEffect(() => {
+    if (fieldValue) {
+      getVideosInfo(fieldValue);
+    }
+  }, [fieldValue, getVideosInfo]);
 
   return (
     <>
-      value: {sdk.field.getValue()}
+      {videos &&
+        videos.map((video) => (
+          <Tile
+            key={video.id}
+            videoId={video.id}
+            title={video.snippet.title}
+            description={video.snippet.description}
+            embedHtml={video.player.embedHtml}
+            viewCount={video.statistics.viewCount}
+            commentCount={video.statistics.commentCount}
+            likeCount={video.statistics.likeCount}
+            publishedAt={video.snippet.publishedAt}
+            channelThumbnail={video.channelInfo?.snippet.thumbnails.default?.url}
+            channelCustomUrl={video.channelInfo?.snippet.customUrl}
+            channelTitle={video.channelInfo?.snippet.title}
+          />
+        ))}
       <button
         className="flex items-center justify-center bg-sky-900 hover:bg-sky-700 text-white p-4"
         onClick={openDialog}
