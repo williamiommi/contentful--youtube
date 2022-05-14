@@ -1,4 +1,3 @@
-import { Button } from '@contentful/f36-components';
 import { memo, useMemo } from 'react';
 import { getElapsedTime } from '../lib/utils';
 
@@ -40,7 +39,7 @@ const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTil
           ))}
         </div>
       </div>
-      <h2 className="text-sm" dangerouslySetInnerHTML={{ __html: `${title}` }} />
+      <h2 className="text-sm mt-1 font-semibold" dangerouslySetInnerHTML={{ __html: `${title}` }} />
       {formattedDate && <span className="text-xs text-gray-500">{formattedDate}</span>}
     </div>
   );
