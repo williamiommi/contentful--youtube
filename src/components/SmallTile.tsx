@@ -19,8 +19,8 @@ const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTil
     ];
   }, [id]);
   return (
-    <div className="flex max-w-[200px] cursor-pointer flex-col text-left">
-      <div className="relative group">
+    <div className="flex max-w-[200px] flex-col text-left">
+      <div className="relative group cursor-pointer">
         <img
           src={thumbnail}
           alt={title}
