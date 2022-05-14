@@ -1,5 +1,5 @@
+import { RelativeDateTime } from '@contentful/f36-components';
 import { memo, useMemo } from 'react';
-import { getElapsedTime } from '../lib/utils';
 
 interface SmallTileProps {
   id?: string;
@@ -12,7 +12,6 @@ interface SmallTileProps {
 
 const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTileProps) => {
   console.log('smallTile render::');
-  const formattedDate = useMemo(() => getElapsedTime(date), [date]);
   const ctas = useMemo(() => {
     return [
       { label: 'PREVIEW', cb: () => onPreview(id) },
@@ -40,7 +39,7 @@ const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTil
         </div>
       </div>
       <h2 className="text-sm mt-1 font-semibold" dangerouslySetInnerHTML={{ __html: `${title}` }} />
-      {formattedDate && <span className="text-xs text-gray-500">{formattedDate}</span>}
+      <RelativeDateTime className="text-xs text-gray-500" date={date ?? ''} />
     </div>
   );
 };

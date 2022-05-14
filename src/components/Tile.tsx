@@ -1,4 +1,5 @@
-import { formatCount, getElapsedTime } from '../lib/utils';
+import { RelativeDateTime } from '@contentful/f36-components';
+import { formatCount } from '../lib/utils';
 
 interface TileProps {
   videoId?: string;
@@ -38,7 +39,7 @@ const Tile = ({
       >
         <h2 className="text-lg font-bold text-black">{title}</h2>
         <p>
-          {formatCount(viewCount)} views • {getElapsedTime(publishedAt)}
+          {formatCount(viewCount)} views • <RelativeDateTime date={publishedAt ?? ''} />
         </p>
         <a
           className="my-2 inline-flex items-center space-x-2 transition-colors hover:text-black"
