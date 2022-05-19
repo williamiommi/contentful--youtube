@@ -113,9 +113,9 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   };
 
   const getVideosInfo = useCallback(
-    async (videoIds: string[]) => {
+    async (videoId: string) => {
       try {
-        const data = await fetchVideos(getSearchVideoParams(apiKey, videoIds));
+        const data = await fetchVideos(getSearchVideoParams(apiKey, videoId));
         for (let item of data.items) {
           const channel = await fetchChannel(
             getSearchChannelParams(apiKey, item.snippet.channelId)
