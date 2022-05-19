@@ -8,20 +8,17 @@ import { Button } from '@contentful/f36-components';
 
 const Field = () => {
   const sdk = useSDK<FieldExtensionSDK>();
-  const [fieldValue, setFieldValue] = useState(sdk.field.getValue());
   const { getVideosInfo, videos, setVideos } = useYtApi(sdk.parameters.installation.apiKey);
   useAutoResizer();
 
   const clearField = async () => {
     await sdk.field.removeValue();
-    setFieldValue(undefined);
     setVideos(undefined);
     sdk.entry.save();
   };
 
   const setVideo = (id: string) => {
     sdk.field.setValue(id);
-    setFieldValue(id);
     sdk.entry.save();
   };
 
@@ -37,10 +34,13 @@ const Field = () => {
   };
 
   useEffect(() => {
-    if (fieldValue) {
-      getVideosInfo(fieldValue);
-    }
-  }, [fieldValue, getVideosInfo]);
+    const unsubscribe = sdk.field.onValueChanged(() => {
+      if (sdk.field.getValue()) getVideosInfo(sdk.field.getValue());
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, [sdk.field, getVideosInfo]);
 
   return (
     <>
