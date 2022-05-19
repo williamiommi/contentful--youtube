@@ -5,10 +5,12 @@ import useYtApi from '../lib/hooks/useYtApi';
 import useAutoResizer from '../lib/hooks/useAutoResizer';
 import Tile from '../components/Tile';
 import { Button } from '@contentful/f36-components';
+import useHandleError from '../lib/hooks/useHandleError';
 
 const Field = () => {
   const sdk = useSDK<FieldExtensionSDK>();
-  const { getVideosInfo, videos, setVideos } = useYtApi(sdk.parameters.installation.apiKey);
+  const { error, getVideosInfo, videos, setVideos } = useYtApi(sdk.parameters.installation.apiKey);
+  useHandleError(error);
   useAutoResizer();
 
   const clearField = async () => {
@@ -47,22 +49,20 @@ const Field = () => {
       {videos && (
         <div className="flex flex-col space-y-3">
           {videos.map((video) => (
-            <>
-              <Tile
-                key={video.id}
-                videoId={video.id}
-                title={video.snippet.title}
-                description={video.snippet.description}
-                embedHtml={video.player.embedHtml}
-                viewCount={video.statistics.viewCount}
-                commentCount={video.statistics.commentCount}
-                likeCount={video.statistics.likeCount}
-                publishedAt={video.snippet.publishedAt}
-                channelThumbnail={video.channelInfo?.snippet.thumbnails.default?.url}
-                channelCustomUrl={video.channelInfo?.snippet.customUrl}
-                channelTitle={video.channelInfo?.snippet.title}
-              />
-            </>
+            <Tile
+              key={video.id}
+              videoId={video.id}
+              title={video.snippet.title}
+              description={video.snippet.description}
+              embedHtml={video.player.embedHtml}
+              viewCount={video.statistics.viewCount}
+              commentCount={video.statistics.commentCount}
+              likeCount={video.statistics.likeCount}
+              publishedAt={video.snippet.publishedAt}
+              channelThumbnail={video.channelInfo?.snippet.thumbnails.default?.url}
+              channelCustomUrl={video.channelInfo?.snippet.customUrl}
+              channelTitle={video.channelInfo?.snippet.title}
+            />
           ))}
         </div>
       )}

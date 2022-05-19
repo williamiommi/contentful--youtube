@@ -10,6 +10,7 @@ export interface AppInstallationParameters {
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({});
+  const [apiKeyInvalid, setApiKeyInvalid] = useState(false);
   const sdk = useSDK<AppExtensionSDK>();
   /*
      To use the cma, inject it as follows.
@@ -18,6 +19,7 @@ const ConfigScreen = () => {
   // const cma = useCMA();
 
   const onApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKeyInvalid(false);
     setParameters({ ...parameters, apiKey: e.target.value });
   };
 
@@ -26,9 +28,19 @@ const ConfigScreen = () => {
     // or "Save" in the configuration screen.
     // for more details see https://www.contentful.com/developers/docs/extensibility/ui-extensions/sdk-reference/#register-an-app-configuration-hook
 
+    if (!parameters.apiKey) {
+      setApiKeyInvalid(true);
+      sdk.notifier.error('Please provide a valid Api key');
+      return false;
+    }
+
+    setApiKeyInvalid(false);
+
     // Get current the state of EditorInterface and other entities
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
+
+    console.log(parameters);
 
     return {
       // Parameters to be persisted as the app configuration.
@@ -74,6 +86,7 @@ const ConfigScreen = () => {
             name="publicKey"
             id="publicKey"
             value={parameters.apiKey || ''}
+            isInvalid={apiKeyInvalid}
             onChange={onApiKeyChange}
           />
         </FormControl>

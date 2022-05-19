@@ -31,16 +31,18 @@ const Tile = ({
   return (
     <div className="flex space-x-3">
       {embedHtml && <div dangerouslySetInnerHTML={{ __html: embedHtml }} />}
-      <a
-        href={`https://www.youtube.com/watch?v=${videoId}`}
-        target="_blank"
-        className="text-xs text-gray-600 transition-all hover:opacity-90"
-        rel="noreferrer"
-      >
-        <h2 className="text-lg font-bold text-black">{title}</h2>
-        <p>
-          {formatCount(viewCount)} views • <RelativeDateTime date={publishedAt ?? ''} />
-        </p>
+      <div>
+        <a
+          href={`https://www.youtube.com/watch?v=${videoId}`}
+          target="_blank"
+          className="text-xs text-gray-600 transition-all hover:opacity-90"
+          rel="noreferrer"
+        >
+          <h2 className="text-lg font-bold text-black">{title}</h2>
+          <p>
+            {formatCount(viewCount)} views • <RelativeDateTime date={publishedAt ?? ''} />
+          </p>
+        </a>
         <a
           className="my-2 inline-flex items-center space-x-2 transition-colors hover:text-black"
           target="_blank"
@@ -85,7 +87,7 @@ const Tile = ({
             {formatCount(likeCount)}
           </span>
         </div>
-      </a>
+      </div>
     </div>
   );
 };

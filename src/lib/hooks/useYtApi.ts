@@ -11,11 +11,6 @@ import {
 import { getSearchChannelParams, getSearchParams, getSearchVideoParams } from '../utils';
 const YT_BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-function sleep(ms: number) {
-  // add ms millisecond timeout before promise resolution
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const nextPageRef = useRef<string>();
   const prevPageRef = useRef<string>();
@@ -25,29 +20,34 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [videos, setVideos] = useState<IYTVideoResource[]>();
 
-  const handleError = async (res: Response) => {
-    const json = (await res.json()) as IYTError;
-    setError(json.error.message);
-    throw json.error.message;
+  const handleResponse = async (res: Response) => {
+    if (!res.ok) {
+      const json = (await res.json()) as IYTError;
+      throw new Error(json.error.message);
+    } else {
+      return res.json();
+    }
+  };
+
+  const printError = (e: any) => {
+    console.error(e);
+    setError(`Ops! Something went wrong! ${e || ''}`);
   };
 
   const fetchResults = useCallback(async (params: string): Promise<IYTSearchResponse> => {
     setIsFetching(true);
     const res = await fetch(`${YT_BASE_URL}/search?${params}`);
-    if (!res.ok) handleError(res);
-    return res.json();
+    return handleResponse(res);
   }, []);
 
   const fetchVideos = useCallback(async (params: string): Promise<IYTVideoResponse> => {
     const res = await fetch(`${YT_BASE_URL}/videos?${params}`);
-    if (!res.ok) handleError(res);
-    return res.json();
+    return handleResponse(res);
   }, []);
 
   const fetchChannel = useCallback(async (params: string): Promise<IYTChannelResponse> => {
     const res = await fetch(`${YT_BASE_URL}/channels?${params}`);
-    if (!res.ok) handleError(res);
-    return res.json();
+    return handleResponse(res);
   }, []);
 
   const updateData = (
@@ -68,8 +68,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       const data = await fetchResults(getSearchParams(apiKey, q, undefined, options));
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 
@@ -81,8 +80,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       );
       updateData([...results, ...data.items], data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 
@@ -94,8 +92,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 
@@ -107,8 +104,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 
@@ -123,9 +119,8 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
           item.channelInfo = channel.items[0];
         }
         setVideos(data.items);
-      } catch (e) {
-        console.error(e);
-        setError('Ops! Something went wrong!');
+      } catch (e: any) {
+        printError(e);
       }
     },
     [apiKey, fetchVideos, fetchChannel]
@@ -135,8 +130,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     setIsFetching(true);
     const res = await fetch(url);
     // await sleep(0.3 * 1000);
-    if (!res.ok) handleError(res);
-    return res.json();
+    return handleResponse(res);
   };
 
   const _search = async (q: string) => {
@@ -145,8 +139,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       const data = await _fetchResults('fakedata/page1.json');
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 
@@ -158,8 +151,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
       );
       updateData([...results, ...data.items], data.nextPageToken, data.prevPageToken);
     } catch (e) {
-      console.error(e);
-      setError('Ops! Something went wrong!');
+      printError(e);
     }
   };
 

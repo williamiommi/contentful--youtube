@@ -1,11 +1,12 @@
-import { useCallback, useRef } from 'react';
 import { DialogExtensionSDK } from '@contentful/app-sdk';
+import { Button, Form, Modal, ModalLauncher, TextInput } from '@contentful/f36-components';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
-import { Button, Modal, TextInput, ModalLauncher, Form } from '@contentful/f36-components';
-import useYtApi from '../lib/hooks/useYtApi';
-import SmallTile from '../components/SmallTile';
-import PreviewModal from '../components/PreviewModal';
 import { motion } from 'framer-motion';
+import { useCallback, useRef } from 'react';
+import PreviewModal from '../components/PreviewModal';
+import SmallTile from '../components/SmallTile';
+import useHandleError from '../lib/hooks/useHandleError';
+import useYtApi from '../lib/hooks/useYtApi';
 
 const item = {
   hidden: { opacity: 0, y: -20 },
@@ -15,6 +16,7 @@ const item = {
 const Dialog = () => {
   const sdk = useSDK<DialogExtensionSDK>();
   const yt = useYtApi(sdk.parameters.installation.apiKey);
+  useHandleError(yt.error);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onSearch = () => {
