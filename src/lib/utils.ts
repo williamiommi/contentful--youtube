@@ -34,6 +34,7 @@ export const getSearchParams = (
   searchParams.append('part', 'snippet');
   searchParams.append('type', 'video');
   searchParams.append('videoEmbeddable', 'true');
+  searchParams.append('maxResults', '50');
   if (query) searchParams.append('q', query);
   if (pageToken) searchParams.append('pageToken', pageToken);
   // print options
@@ -43,11 +44,11 @@ export const getSearchParams = (
   return searchParams.toString();
 };
 
-export const getSearchVideoParams = (apiKey: string, videoIds: string[]): string => {
+export const getSearchVideoParams = (apiKey: string, videoId: string): string => {
   const searchParams = new URLSearchParams();
   searchParams.append('key', apiKey);
   searchParams.append('part', DEFAULT_PART_VIDEO.join(','));
-  searchParams.append('id', videoIds.join(','));
+  searchParams.append('id', videoId);
   searchParams.append('maxWidth', '360');
   return searchParams.toString();
 };
