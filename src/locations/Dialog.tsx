@@ -18,11 +18,11 @@ const Dialog = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const onSearch = () => {
-    if (inputRef.current?.value && !yt.isFetching) yt._search(inputRef.current.value);
+    if (inputRef.current?.value && !yt.isFetching) yt.search(inputRef.current.value);
   };
 
   const onLoadMore = () => {
-    if (!yt.isFetching) yt._loadMore();
+    if (!yt.isFetching) yt.loadMore();
   };
 
   const onSelectVideo = useCallback((id?: string) => {
