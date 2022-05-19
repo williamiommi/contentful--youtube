@@ -20,8 +20,8 @@ const Field = () => {
   };
 
   const setVideo = (id: string) => {
-    sdk.field.setValue([id]);
-    setFieldValue([id]);
+    sdk.field.setValue(id);
+    setFieldValue(id);
     sdk.entry.save();
   };
 
@@ -69,11 +69,11 @@ const Field = () => {
       {videos && <div className="my-3 h-[1px] bg-gray-600"></div>}
       <section className="space-x-2">
         <Button variant="primary" className="font-bold" onClick={selectVideos}>
-          {videos ? 'CHANGE VIDEO' : 'SELECT A VIDEO'}
+          {videos ? 'CHANGE VIDEO' : 'ADD VIDEO'}
         </Button>
         {videos && (
           <Button variant="negative" className="font-bold" onClick={clearField}>
-            REMOVE VIDEO
+            CLEAR FIELD
           </Button>
         )}
       </section>
