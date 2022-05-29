@@ -64,6 +64,7 @@ const Dialog = () => {
                 <SmallTile
                   id={video.id.videoId}
                   thumbnail={video.snippet.thumbnails.medium?.url}
+                  channelTitle={video.snippet.channelTitle}
                   title={video.snippet.title}
                   date={video.snippet.publishedAt}
                   onSelect={onSelectVideo}

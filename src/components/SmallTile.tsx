@@ -5,12 +5,21 @@ interface SmallTileProps {
   id?: string;
   thumbnail?: string;
   title?: string;
+  channelTitle?: string;
   date?: string;
   onSelect: (id?: string) => void;
   onPreview: (id?: string) => void;
 }
 
-const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTileProps) => {
+const SmallTile = ({
+  id,
+  thumbnail,
+  channelTitle,
+  title,
+  date,
+  onSelect,
+  onPreview,
+}: SmallTileProps) => {
   console.log('smallTile render::');
   const ctas = useMemo(() => {
     return [
@@ -20,7 +29,7 @@ const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTil
   }, [id]);
   return (
     <div className="flex max-w-[200px] flex-col text-left">
-      <div className="relative group cursor-pointer">
+      <div className="relative group cursor-pointer space-y-1">
         <img
           src={thumbnail}
           alt={title}
@@ -39,6 +48,7 @@ const SmallTile = ({ id, thumbnail, title, date, onSelect, onPreview }: SmallTil
         </div>
       </div>
       <h2 className="text-sm mt-1 font-semibold" dangerouslySetInnerHTML={{ __html: `${title}` }} />
+      <h3 className="text-sm italic text-gray-500 font-semibold">{channelTitle}</h3>
       <RelativeDateTime className="text-xs text-gray-500" date={date ?? ''} />
     </div>
   );
