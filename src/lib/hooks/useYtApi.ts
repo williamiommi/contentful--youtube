@@ -3,7 +3,6 @@ import {
   IYTError,
   IYTSearchResource,
   IYTSearchResponse,
-  IUseYTSearchOptions,
   IYTVideoResponse,
   IYTChannelResponse,
   IYTVideoResource,
@@ -11,7 +10,7 @@ import {
 import { getSearchChannelParams, getSearchParams, getSearchVideoParams } from '../utils';
 const YT_BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
+const useYtApi = (apiKey: string) => {
   const nextPageRef = useRef<string>();
   const prevPageRef = useRef<string>();
   const queryTermRef = useRef<string>();
@@ -65,7 +64,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
   const search = async (q: string) => {
     try {
       queryTermRef.current = q;
-      const data = await fetchResults(getSearchParams(apiKey, q, undefined, options));
+      const data = await fetchResults(getSearchParams(apiKey, q, undefined));
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
       printError(e);
@@ -76,7 +75,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     try {
       if (!nextPageRef.current) return;
       const data = await fetchResults(
-        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current, options)
+        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current)
       );
       updateData([...results, ...data.items], data.nextPageToken, data.prevPageToken);
     } catch (e) {
@@ -88,7 +87,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     try {
       if (!nextPageRef.current) return;
       const data = await fetchResults(
-        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current, options)
+        getSearchParams(apiKey, queryTermRef.current, nextPageRef.current)
       );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
@@ -100,7 +99,7 @@ const useYtApi = (apiKey: string, options: IUseYTSearchOptions = {}) => {
     try {
       if (!prevPageRef.current) return;
       const data = await fetchResults(
-        getSearchParams(apiKey, queryTermRef.current, prevPageRef.current, options)
+        getSearchParams(apiKey, queryTermRef.current, prevPageRef.current)
       );
       updateData(data.items, data.nextPageToken, data.prevPageToken);
     } catch (e) {
