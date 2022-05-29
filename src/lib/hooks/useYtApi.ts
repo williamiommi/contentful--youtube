@@ -125,35 +125,6 @@ const useYtApi = (apiKey: string) => {
     [apiKey, fetchVideos, fetchChannel]
   );
 
-  const _fetchResults = async (url: string): Promise<IYTSearchResponse> => {
-    setIsFetching(true);
-    const res = await fetch(url);
-    // await sleep(0.3 * 1000);
-    return handleResponse(res);
-  };
-
-  const _search = async (q: string) => {
-    try {
-      queryTermRef.current = q;
-      const data = await _fetchResults('fakedata/page1.json');
-      updateData(data.items, data.nextPageToken, data.prevPageToken);
-    } catch (e) {
-      printError(e);
-    }
-  };
-
-  const _loadMore = async () => {
-    try {
-      if (!nextPageRef.current) return;
-      const data = await _fetchResults(
-        `fakedata/page${Math.floor(Math.random() * (5 - 2 + 1)) + 2}.json`
-      );
-      updateData([...results, ...data.items], data.nextPageToken, data.prevPageToken);
-    } catch (e) {
-      printError(e);
-    }
-  };
-
   useEffect(() => {
     if (!apiKey) setError('Please provide an api key');
   }, [apiKey]);
@@ -161,8 +132,6 @@ const useYtApi = (apiKey: string) => {
   return {
     error,
     results,
-    _search,
-    _loadMore,
     search,
     loadMore,
     nextPage,
