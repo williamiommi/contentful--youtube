@@ -40,8 +40,6 @@ const ConfigScreen = () => {
     // related to this app installation
     const currentState = await sdk.app.getCurrentState();
 
-    console.log(parameters);
-
     return {
       // Parameters to be persisted as the app configuration.
       parameters,
