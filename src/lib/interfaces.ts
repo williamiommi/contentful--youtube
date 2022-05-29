@@ -1,7 +1,3 @@
-export interface IUseYTSearchOptions {
-  maxResults?: number;
-}
-
 interface IYTThumbnail {
   height: number;
   url: string;
