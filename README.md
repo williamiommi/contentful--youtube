@@ -3,7 +3,7 @@
 The App lets you select a YouTube video without leaving the contentful platform.
 This app use YouTube api, so you need a valid key and keep in mind the [Quota usage](https://developers.google.com/youtube/v3/getting-started#quota).
 
-See the [post]() for more information
+See the [post](https://dev.to/wiommi/how-to-youtubing-in-contentful-5f48) for more information
 
 ---
 
